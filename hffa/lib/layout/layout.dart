@@ -3,6 +3,8 @@ import 'package:hffa/layout/login.dart';
 import 'package:hffa/layout/register.dart';
 import 'package:hffa/layout/transaction.dart';
 import 'package:hffa/layout/calculator.dart';
+import 'package:hffa/main.dart';
+import 'package:provider/provider.dart';
 
 class LayoutWidget extends StatefulWidget {
   const LayoutWidget({super.key});
@@ -22,6 +24,8 @@ class _LayoutWidgetState extends State<LayoutWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final globalData = Provider.of<GlobalData>(context);
+    print("******************** ${globalData.isUserLoggedIn} ");
     return DefaultTabController(
       length: 4,
       child: Scaffold(
@@ -61,7 +65,11 @@ class _LayoutWidgetState extends State<LayoutWidget> {
         ),
         body: TabBarView(
           children: [
-            LoginPage(onLoginSuccess: handleLoginSuccess), // Pass callback
+            //LoginPage(onLoginSuccess: handleLoginSuccess),
+            globalData.isUserLoggedIn
+                ? _buildAlreadyLoggedInTab(context, globalData)
+                : LoginPage(
+                    onLoginSuccess: handleLoginSuccess), // Pass callback
             isLoggedIn ? RegisterForm() : _buildDisabledTab(),
             isLoggedIn ? TxnForm() : _buildDisabledTab(),
             isLoggedIn ? TxnSearchForm() : _buildDisabledTab(),
@@ -79,4 +87,37 @@ class _LayoutWidgetState extends State<LayoutWidget> {
       ),
     );
   }
+}
+
+Widget _buildAlreadyLoggedInTab(BuildContext context, GlobalData globalData) {
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Text(
+        'You logged in Successfully!!!',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 16),
+      ),
+      SizedBox(height: 38),
+      ElevatedButton(
+        onPressed: () {
+          print("******_buildAlreadyLoggedInTab*****");
+          globalData.setIsUserLoggedIn(false);
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => LayoutWidget()),
+            (Route<dynamic> route) => false,
+          );
+        },
+        child: Text('Logout'),
+        style: ElevatedButton.styleFrom(
+          foregroundColor: Colors.white,
+          backgroundColor: Colors.teal,
+          padding: EdgeInsets.symmetric(vertical: 14),
+          minimumSize: Size(120, 40),
+          textStyle: TextStyle(fontSize: 15),
+        ),
+      ),
+    ],
+  );
 }

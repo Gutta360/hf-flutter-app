@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hffa/layout/layout.dart';
+import 'package:hffa/main.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   final VoidCallback onLoginSuccess;
@@ -18,31 +21,38 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _login() {
-    if (_formKey.currentState!.validate()) {
-      // Simulate login logic
-      print('Logging in with $_email and $_password');
+  // void _login({required globalData}) {
+  //   if (_formKey.currentState!.validate()) {
+  //     // Simulate login logic
+  //     print('Logging in with $_email and $_password');
+  //     globalData.setIsUserLoggedIn(true);
+  //     setState(() {
+  //       isLoggedIn = true;
+  //     });
 
-      setState(() {
-        isLoggedIn = true;
-      });
-
-      // Notify the parent widget about the successful login
-      widget.onLoginSuccess();
-    }
-  }
+  //     // Notify the parent widget about the successful login
+  //     widget.onLoginSuccess();
+  //   }
+  // }
 
   void _logout() {
-    setState(() {
-      isLoggedIn = false;
-      _emailController.clear();
-      _passwordController.clear();
-    });
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LayoutWidget()),
+      (Route<dynamic> route) => false,
+    );
+    // setState(() {
+    //   isLoggedIn = false;
+    //   _emailController.clear();
+    //   _passwordController.clear();
+    // });
     print('User logged out');
   }
 
   @override
   Widget build(BuildContext context) {
+    final globalData = Provider.of<GlobalData>(context);
+    print("**********222222********** ${globalData.isUserLoggedIn} ");
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Center(
@@ -59,7 +69,15 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     SizedBox(height: 38),
                     ElevatedButton(
-                      onPressed: _logout,
+                      onPressed: () {
+                        globalData.setIsUserLoggedIn(false);
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LayoutWidget()),
+                          (Route<dynamic> route) => false,
+                        );
+                      },
                       child: Text('Logout'),
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
@@ -117,7 +135,16 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       SizedBox(height: 38),
                       ElevatedButton(
-                        onPressed: _login,
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            print('Logging in with $_email and $_password');
+                            globalData.setIsUserLoggedIn(true);
+                            setState(() {
+                              isLoggedIn = true;
+                            });
+                            widget.onLoginSuccess();
+                          }
+                        },
                         child: Text('Login'),
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,

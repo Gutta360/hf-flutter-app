@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:hffa/layout/layout.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MainWidget());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => GlobalData(),
+      child: const MainWidget(),
+    ),
+  );
 }
 
 class MainWidget extends StatelessWidget {
@@ -20,5 +26,16 @@ class MainWidget extends StatelessWidget {
         ),
         debugShowCheckedModeBanner: false,
         home: LayoutWidget());
+  }
+}
+
+class GlobalData extends ChangeNotifier {
+  bool _isUserLoggedIn = false;
+
+  bool get isUserLoggedIn => _isUserLoggedIn;
+
+  void setIsUserLoggedIn(bool isUserLoggedIn) {
+    _isUserLoggedIn = isUserLoggedIn;
+    notifyListeners();
   }
 }
