@@ -14,18 +14,9 @@ class LayoutWidget extends StatefulWidget {
 }
 
 class _LayoutWidgetState extends State<LayoutWidget> {
-  bool isLoggedIn = false;
-
-  void handleLoginSuccess() {
-    setState(() {
-      isLoggedIn = true;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final globalData = Provider.of<GlobalData>(context);
-    print("******************** ${globalData.isUserLoggedIn} ");
     return DefaultTabController(
       length: 4,
       child: Scaffold(
@@ -68,11 +59,10 @@ class _LayoutWidgetState extends State<LayoutWidget> {
             //LoginPage(onLoginSuccess: handleLoginSuccess),
             globalData.isUserLoggedIn
                 ? _buildAlreadyLoggedInTab(context, globalData)
-                : LoginPage(
-                    onLoginSuccess: handleLoginSuccess), // Pass callback
-            isLoggedIn ? RegisterForm() : _buildDisabledTab(),
-            isLoggedIn ? TxnForm() : _buildDisabledTab(),
-            isLoggedIn ? TxnSearchForm() : _buildDisabledTab(),
+                : LoginPage(), // Pass callback
+            globalData.isUserLoggedIn ? RegisterForm() : _buildDisabledTab(),
+            globalData.isUserLoggedIn ? TxnForm() : _buildDisabledTab(),
+            globalData.isUserLoggedIn ? TxnSearchForm() : _buildDisabledTab(),
           ],
         ),
       ),
@@ -101,7 +91,6 @@ Widget _buildAlreadyLoggedInTab(BuildContext context, GlobalData globalData) {
       SizedBox(height: 38),
       ElevatedButton(
         onPressed: () {
-          print("******_buildAlreadyLoggedInTab*****");
           globalData.setIsUserLoggedIn(false);
           Navigator.pushAndRemoveUntil(
             context,

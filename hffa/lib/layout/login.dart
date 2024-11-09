@@ -4,10 +4,6 @@ import 'package:hffa/main.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
-  final VoidCallback onLoginSuccess;
-
-  LoginPage({required this.onLoginSuccess});
-
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -16,24 +12,9 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   String _email = '';
   String _password = '';
-  bool isLoggedIn = false; // Track login state
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  // void _login({required globalData}) {
-  //   if (_formKey.currentState!.validate()) {
-  //     // Simulate login logic
-  //     print('Logging in with $_email and $_password');
-  //     globalData.setIsUserLoggedIn(true);
-  //     setState(() {
-  //       isLoggedIn = true;
-  //     });
-
-  //     // Notify the parent widget about the successful login
-  //     widget.onLoginSuccess();
-  //   }
-  // }
 
   void _logout() {
     Navigator.pushAndRemoveUntil(
@@ -41,24 +22,17 @@ class _LoginPageState extends State<LoginPage> {
       MaterialPageRoute(builder: (context) => LayoutWidget()),
       (Route<dynamic> route) => false,
     );
-    // setState(() {
-    //   isLoggedIn = false;
-    //   _emailController.clear();
-    //   _passwordController.clear();
-    // });
-    print('User logged out');
   }
 
   @override
   Widget build(BuildContext context) {
     final globalData = Provider.of<GlobalData>(context);
-    print("**********222222********** ${globalData.isUserLoggedIn} ");
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: 400),
-          child: isLoggedIn
+          child: globalData.isUserLoggedIn
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -139,10 +113,6 @@ class _LoginPageState extends State<LoginPage> {
                           if (_formKey.currentState!.validate()) {
                             print('Logging in with $_email and $_password');
                             globalData.setIsUserLoggedIn(true);
-                            setState(() {
-                              isLoggedIn = true;
-                            });
-                            widget.onLoginSuccess();
                           }
                         },
                         child: Text('Login'),
