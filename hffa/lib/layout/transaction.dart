@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TxnForm extends StatefulWidget {
   @override
@@ -14,7 +15,7 @@ class _TxnFormState extends State<TxnForm> {
   DateTime? _selectedDate;
   String? _selectedType;
 
-  final List<String> nameOptions = ['John Doe', 'Jane Smith', 'Alex Brown'];
+  List<String> nameOptions = []; // Empty initially
   final List<String> typeOptions = ['CREDIT', 'ANAMATH'];
 
   TextEditingController _dateController = TextEditingController();
@@ -23,6 +24,28 @@ class _TxnFormState extends State<TxnForm> {
   @override
   void initState() {
     super.initState();
+    fetchNameOptions();
+  }
+
+  Future<void> fetchNameOptions() async {
+    try {
+      // Fetch data from Firestore
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('customers').get();
+
+      // Extract and concatenate 'surname' and 'name' fields
+      List<String> fetchedNames = querySnapshot.docs.map((doc) {
+        String surname = doc['surname'] ?? '';
+        String name = doc['name'] ?? '';
+        return '$surname $name';
+      }).toList();
+
+      setState(() {
+        nameOptions = fetchedNames;
+      });
+    } catch (e) {
+      print('Error fetching names: $e');
+    }
   }
 
   @override
@@ -123,12 +146,12 @@ class _TxnFormState extends State<TxnForm> {
                     child: Text('Save'),
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor: Colors.teal, // Text color
+                      backgroundColor: Colors.teal,
                       padding: EdgeInsets.symmetric(vertical: 14),
                       minimumSize: Size(120, 40),
                       textStyle: TextStyle(
-                        fontSize: 15, // Font size // Optional: makes text bold
-                      ), // Reduced height and width
+                        fontSize: 15,
+                      ),
                     ),
                   )
                 ],

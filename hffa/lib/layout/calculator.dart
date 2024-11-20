@@ -91,7 +91,6 @@ class _TxnSearchFormState extends State<TxnSearchForm> {
         bool matchesName =
             _selectedName == null || txn['customerName'] == _selectedName;
 
-        // Updated condition for date filtering (From Date)
         bool matchesDate = _selectedDate == null ||
             (txn['date'] != null && txn['date'].isAfter(_selectedDate!) ||
                 txn['date'].isAtSameMomentAs(_selectedDate!));
@@ -117,7 +116,7 @@ class _TxnSearchFormState extends State<TxnSearchForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(50.0),
+        padding: const EdgeInsets.fromLTRB(200, 50, 200, 100),
         child: Form(
           key: _formKey,
           child: Column(
@@ -171,13 +170,27 @@ class _TxnSearchFormState extends State<TxnSearchForm> {
                 child: Text('Calculate'),
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: Colors.teal, // Text color
+                  backgroundColor: Colors.teal,
                   padding: EdgeInsets.symmetric(vertical: 14),
                   minimumSize: Size(120, 40),
                   textStyle: TextStyle(
-                    fontSize: 15, // Font size // Optional: makes text bold
-                  ), // Reduced height and width
+                    fontSize: 15,
+                  ),
                 ),
+              ),
+              SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Name: ${_selectedName ?? ''}',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'Interest: ${_selectedInterest ?? ''}',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
               SizedBox(height: 16),
               SingleChildScrollView(
@@ -185,24 +198,20 @@ class _TxnSearchFormState extends State<TxnSearchForm> {
                 child: DataTable(
                   columns: [
                     DataColumn(label: Text('S.No')),
-                    DataColumn(label: Text('Customer Name')),
                     DataColumn(label: Text('Bill No')),
                     DataColumn(label: Text('Amount')),
                     DataColumn(label: Text('Date')),
                     DataColumn(label: Text('Type')),
-                    DataColumn(label: Text('Interest Rate')),
                     DataColumn(label: Text('Interest Amount')),
                     DataColumn(label: Text('Amount With Interest')),
                   ],
                   rows: filteredTransactions.map((txn) {
                     return DataRow(cells: [
                       DataCell(Text(txn['sNo'].toString())),
-                      DataCell(Text(txn['customerName'])),
                       DataCell(Text(txn['billNo'])),
                       DataCell(Text(txn['amount'].toString())),
                       DataCell(Text(dateFormat.format(txn['date']))),
                       DataCell(Text(txn['type'])),
-                      DataCell(Text(txn['interestRate'])),
                       DataCell(Text(txn['interestAmount'].toString())),
                       DataCell(Text(txn['amountWithInterest'].toString())),
                     ]);

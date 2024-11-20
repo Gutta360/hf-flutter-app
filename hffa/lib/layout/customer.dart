@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterForm extends StatefulWidget {
   @override
@@ -11,14 +12,61 @@ class _RegisterFormState extends State<RegisterForm> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
-  void _saveForm() {
+  void _saveForm() async {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Form Saved Successfully'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      try {
+        // Check if the customer with the same name and surname already exists
+        QuerySnapshot existingCustomer = await FirebaseFirestore.instance
+            .collection('customers')
+            .where('name', isEqualTo: _nameController.text)
+            .where('surname', isEqualTo: _surnameController.text)
+            .get();
+
+        if (existingCustomer.docs.isNotEmpty) {
+          // Show an alert if the customer with the same name and surname already exists
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Error'),
+              content:
+                  Text('Customer with this name and surname already exists'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } else {
+          // Save the form data to Firestore if the combination of name and surname doesn't exist
+          await FirebaseFirestore.instance.collection('customers').add({
+            'surname': _surnameController.text,
+            'name': _nameController.text,
+            'phone': _phoneController.text,
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Form Saved Successfully'),
+              backgroundColor: Colors.green,
+            ),
+          );
+
+          // Clear the form after saving
+          _surnameController.clear();
+          _nameController.clear();
+          _phoneController.clear();
+        }
+      } catch (error) {
+        print("Error adding document: $error");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to save form'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -55,13 +103,12 @@ class _RegisterFormState extends State<RegisterForm> {
                       child: Text('Save'),
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: Colors.teal, // Text color
+                        backgroundColor: Colors.teal,
                         padding: EdgeInsets.symmetric(vertical: 14),
                         minimumSize: Size(120, 40),
                         textStyle: TextStyle(
-                          fontSize:
-                              15, // Font size // Optional: makes text bold
-                        ), // Reduced height and width
+                          fontSize: 15,
+                        ),
                       ),
                     ),
                   ),

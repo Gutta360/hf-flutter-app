@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hffa/appdata/docs_upload.dart';
 import 'package:hffa/layout/login.dart';
-import 'package:hffa/layout/register.dart';
+import 'package:hffa/layout/customer.dart';
 import 'package:hffa/layout/transaction.dart';
 import 'package:hffa/layout/calculator.dart';
 import 'package:hffa/main.dart';
@@ -18,7 +19,7 @@ class _LayoutWidgetState extends State<LayoutWidget> {
   Widget build(BuildContext context) {
     final globalData = Provider.of<GlobalData>(context);
     return DefaultTabController(
-      length: 4,
+      length: 5,
       child: Scaffold(
         appBar: AppBar(
           bottom: TabBar(
@@ -31,16 +32,20 @@ class _LayoutWidgetState extends State<LayoutWidget> {
                 text: 'Login',
               ),
               Tab(
-                icon: Icon(Icons.app_registration_rounded),
-                text: 'Register',
+                icon: Icon(Icons.account_circle),
+                text: 'Customers',
               ),
               Tab(
                 icon: Icon(Icons.article_outlined),
-                text: 'Transaction',
+                text: 'Transactions',
               ),
               Tab(
                 icon: Icon(Icons.calculate),
                 text: 'Calculator',
+              ),
+              Tab(
+                icon: Icon(Icons.upload),
+                text: 'Data',
               ),
             ],
           ),
@@ -63,6 +68,7 @@ class _LayoutWidgetState extends State<LayoutWidget> {
             globalData.isUserLoggedIn ? RegisterForm() : _buildDisabledTab(),
             globalData.isUserLoggedIn ? TxnForm() : _buildDisabledTab(),
             globalData.isUserLoggedIn ? TxnSearchForm() : _buildDisabledTab(),
+            globalData.isUserLoggedIn ? UploadWidget() : _buildDisabledTab(),
           ],
         ),
       ),
